@@ -178,7 +178,7 @@ if uploaded_file is not None:
             n_trades = len(trades_df)
 
             for _ in range(10000):
-                sampled = df.sample(n=n_trades, replace=True)
+                sampled = trades_df.sample(n=n_trades, replace=True)
                 simulations.append(sampled["pnl"].sum())
 
             sim_df = pd.DataFrame({"Total_Profit": simulations})
