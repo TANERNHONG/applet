@@ -72,7 +72,7 @@ if uploaded_file is not None:
                     check_row = df.iloc[index + i]
 
                     if check_row['Symbol'] == row['Symbol'] and \
-                        ('[tp' in check_row['Comment'] or '[sl' in check_row['Comment']) and \
+                        ('tp' in check_row['Comment'] or 'sl' in check_row['Comment']) and \
                             check_row['Volume'] == row['Volume'] and \
                                 ((row['Type'] == 'buy' and check_row['Type'] == 'sell') or (row['Type'] == 'sell' and check_row['Type'] == 'buy')):
                         out.append(check_row)
@@ -87,9 +87,9 @@ if uploaded_file is not None:
                     time_elapsed = datetime_obj_out - datetime_obj_in
                     status = ''
 
-                    if '[tp' in check_row['Comment']:
+                    if 'tp' in check_row['Comment']:
                         status = 'TP'
-                    elif '[sl' in check_row['Comment']:
+                    elif 'sl' in check_row['Comment']:
                         status = 'SL'
 
                     pnl_1 = row['Commission'] + row['Fee'] + row['Swap'] + row['Profit']
