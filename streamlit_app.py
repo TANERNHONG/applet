@@ -183,7 +183,7 @@ if uploaded_file is not None:
 
             for _ in range(10000):
                 sampled = trades_df.sample(n=n_trades, replace=False)
-                simulations.append(sampled["pnl"].sum())
+                simulations.append(round(sampled["pnl"].sum(), 2))
 
             sim_df = pd.DataFrame({"Total_Profit": simulations})
             mean_profit = sim_df["Total_Profit"].mean()
@@ -191,7 +191,7 @@ if uploaded_file is not None:
             # st.dataframe(sim_df)
 
             histogram = alt.Chart(sim_df).mark_bar().encode(
-                alt.X('Total_Profit:Q',bin=alt.Bin(maxbins=50), title='PnL'),
+                alt.X('Total_Profit:Q',bin=alt.Bin(maxbins=20), title='PnL'),
                 alt.Y('count():Q',title='Frequency')
             ).properties(
                 title='Histogram of profits'
