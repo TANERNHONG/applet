@@ -14,14 +14,13 @@ df = st.file_uploader("Pick a file.")
 def convert_for_download(df):
     return df.to_csv().encode("utf-8")
 
-csv = convert_for_download(df)
-
 datetime_stamp = f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
 
 if st.button("Process files."):
+    csv = convert_for_download(df)
     st.download_button(
         label="Download output as CSV.",
-        data=df,
+        data=csv,
         file_name=f'processed_report_{datetime_stamp}.csv',
         on_click="ignore",
         type="primary",
