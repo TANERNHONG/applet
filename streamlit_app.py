@@ -5,6 +5,25 @@ from datetime import datetime
 from io import BytesIO
 import openpyxl
 
+class Trade:
+    def __init__(self, symbol, deal_in, deal_out, volume, time_in, time_out, status, strategy):
+        self.symbol = symbol
+        self.deal_in = deal_in
+        self.deal_out = deal_out
+        self.volume = volume
+        self.time_in = time_in
+        self.time_out = time_out
+        self.status = status
+        self.strategy = strategy
+        self.time_elapsed = self.time_out - self.time_in
+    
+    def print_info(self):
+        print(f'Strategy: {self.strategy}\nSymbol: {self.symbol}\nVolume: {self.volume}\nTime In: {self.time_in}\nTime Out: {self.time_out}\nTime elapsed: {self.time_elapsed}\nStatus: {self.status}\n')
+    
+    def convert(self):
+        d = {"start": self.time_in,"end": self.time_out, "strategy":self.strategy, "status":self.status}
+        return d
+
 st.set_page_config(
     page_title="Strategy analyser",
     page_icon=":chart_with_upwards_trend:"
@@ -15,7 +34,13 @@ uploaded_file = st.file_uploader("Pick a file.")
 if uploaded_file is not None:
 
     try:
-        df = pd.read_excel(uploaded_file)
+        df = pd.read_excel(uploaded_file, skiprows=6)
+        start = df.index[df['Time']=='Deals'].tolist()[0]
+        end = df.index[df['Time']=='Open Positions'].tolist()[0]
+        df = pd.read_excel(uploaded_file, skiprows=start+8, nrows=end-start-3)
+        df = df.dropna(subset=['Symbol'])
+
+        st.dataframe(df)
 
         @st.cache_data
         def convert_for_download(df):
