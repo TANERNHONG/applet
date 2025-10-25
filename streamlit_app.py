@@ -41,7 +41,7 @@ if uploaded_file is not None:
         # print(list(df['Inputs:']))
         start = df.index[df['Inputs:'] == 'Deals'].tolist()[0]
         end = len(df)+7
-        df = pd.read_excel(df, skiprows=start+8, nrows=end-start-2)
+        df = pd.read_excel(uploaded_file, skiprows=start+8, nrows=end-start-2)
 
         st.dataframe(df)
 
