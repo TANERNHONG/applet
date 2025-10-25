@@ -135,9 +135,6 @@ if uploaded_file is not None:
 
             st.title("Trade Performance Dashboard")
 
-            col1, col2 = st.columns(2)
-            col3, col4 = st.columns(2)
-
             win_lose_counts = trades_df["status"].value_counts().reset_index()
             win_lose_counts.columns = ["Status", "Count"]
             win_lose_counts["Percent"] = win_lose_counts["Count"] / win_lose_counts["Count"].sum() * 100
@@ -152,7 +149,7 @@ if uploaded_file is not None:
                 text=alt.Text("Percent:Q", format=".1f")
             )
 
-            col1.altair_chart(pie + text, use_container_width=True)
+            st.altair_chart(pie + text, use_container_width=True)
 
 
             df_sorted = trades_df.sort_values("time_in").reset_index(drop=True)
@@ -166,7 +163,7 @@ if uploaded_file is not None:
                 tooltip=["time_in", "cumulative"]
             ).properties(title="Cumulative Profit Over Time")
 
-            col2.altair_chart(line_chart, use_container_width=True)
+            st.altair_chart(line_chart, use_container_width=True)
 
             trades_df["duration_in_min"] = (trades_df["time_out"] - trades_df["time_in"]).dt.total_seconds() / 60  # in minutes
 
@@ -177,7 +174,7 @@ if uploaded_file is not None:
                 tooltip=["pnl", "duration_in_min", "status"]
             ).properties(title="Profit vs Trade Duration")
 
-            col3.altair_chart(scatter_chart, use_container_width=True)
+            st.altair_chart(scatter_chart, use_container_width=True)
 
             st.title("Performing simulations")
             col5, col6 = st.columns(2)
