@@ -140,6 +140,7 @@ if uploaded_file is not None:
 
             win_lose_counts = trades_df["status"].value_counts().reset_index()
             win_lose_counts.columns = ["Status", "Count"]
+            win_lose_counts["Percent"] = win_lose_counts["Count"] / win_lose_counts["Count"].sum() * 100
 
             pie = alt.Chart(win_lose_counts).mark_arc().encode(
                 theta=alt.Theta(field="Count", type="quantitative"),
@@ -183,7 +184,7 @@ if uploaded_file is not None:
 
             for _ in range(10000):
                 sampled = trades_df.sample(n=n_trades, replace=False)
-                simulations.append(round(sampled["pnl"].sum(), 2))
+                simulations.append(sampled["pnl"].sum())
 
             sim_df = pd.DataFrame({"Total_Profit": simulations})
             mean_profit = sim_df["Total_Profit"].mean()
