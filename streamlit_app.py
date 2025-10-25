@@ -47,6 +47,8 @@ if uploaded_file is not None:
         df = pd.read_excel(uploaded_file, skiprows=start+8, nrows=end-start-3)
         df = df.dropna(subset=['Symbol'])
 
+        st.dataframe(df)
+
         list_of_trades = []
         for index, row in df.iterrows():
             if row['Direction'] == 'in':
