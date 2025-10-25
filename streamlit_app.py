@@ -151,25 +151,25 @@ if uploaded_file is not None:
 
 
             df_sorted = trades_df.sort_values("time_in").reset_index(drop=True)
-            df_sorted["Cumulative"] = df_sorted["pnl"].cumsum()
+            df_sorted["cumulative"] = df_sorted["pnl"].cumsum()
 
             st.dataframe(df_sorted)
 
             line_chart = alt.Chart(df_sorted).mark_line(point=True).encode(
-                x=alt.X("Start:T", title="Time"),
-                y=alt.Y("Cumulative:Q", title="Cumulative Profit"),
-                tooltip=["Start", "Cumulative"]
+                x=alt.X("time_in:T", title="Time"),
+                y=alt.Y("cumulative:Q", title="Cumulative Profit"),
+                tooltip=["time_in", "cumulative"]
             ).properties(title="Cumulative Profit Over Time")
 
             col2.altair_chart(line_chart, use_container_width=True)
 
-            trades_df["duration_in_s"] = (trades_df["time_out"] - trades_df["time_out"]).dt.total_seconds() / 60  # in minutes
+            trades_df["duration_in_min"] = (trades_df["time_out"] - trades_df["time_out"]).dt.total_seconds() / 60  # in minutes
 
             scatter_chart = alt.Chart(trades_df).mark_circle(size=60).encode(
-                x=alt.X("Amount:Q", title="Profit / Loss"),
-                y=alt.Y("Duration:Q", title="Trade Duration (min)"),
-                color=alt.Color("Result:N"),
-                tooltip=["Amount", "Duration", "Result"]
+                x=alt.X("pnl:Q", title="Profit / Loss"),
+                y=alt.Y("duration_in_min:Q", title="Trade Duration (min)"),
+                color=alt.Color("status:N"),
+                tooltip=["pnl", "duration_in_min", "status"]
             ).properties(title="Profit vs Trade Duration")
 
             col3.altair_chart(scatter_chart, use_container_width=True)
