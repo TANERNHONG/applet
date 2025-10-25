@@ -43,7 +43,7 @@ if uploaded_file is not None:
         end = len(df)+7
         df = pd.read_excel(uploaded_file, skiprows=start+8, nrows=end-start-2)
 
-        st.dataframe(df)
+        # st.dataframe(df)
 
         list_of_trades = []
         for index, row in df.iterrows():
