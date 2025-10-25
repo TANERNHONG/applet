@@ -179,6 +179,7 @@ if uploaded_file is not None:
 
             col3.altair_chart(scatter_chart, use_container_width=True)
 
+            st.title("Performing simulations")
             simulations = []
             total_trades = len(trades_df)
         
@@ -197,10 +198,11 @@ if uploaded_file is not None:
             mean_profit = sim_df["Total_Profit"].mean()
             std_profit = sim_df["Total_Profit"].std()
 
-            # st.dataframe(sim_df)
+            percentiles = np.percentile(sim_df["Total_Profit"], [10, 25, 70, 90])
+            p10, p25, p70, p90 = percentiles
 
             histogram = alt.Chart(sim_df).mark_bar().encode(
-                alt.X('Total_Profit:Q',bin=alt.Bin(maxbins=100), title='PnL'),
+                alt.X('Total_Profit:Q',bin=alt.Bin(maxbins=50), title='PnL'),
                 alt.Y('count():Q',title='Frequency')
             ).properties(
                 title='Histogram of profits'
@@ -210,14 +212,28 @@ if uploaded_file is not None:
                 color='red', strokeDash=[5, 5]
             ).encode(x='mean_profit:Q')
 
-            col4.altair_chart(histogram + mean_line, use_container_width=True)
+            st.altair_chart(histogram + mean_line, use_container_width=True)
 
             st.subheader("Simulation Summary Statistics")
-
             summary_df = pd.DataFrame({
-                "Statistic": ["Mean", "Standard Deviation"],
-                "Value": [mean_profit, std_profit]
+                "Statistic": [
+                    "Mean",
+                    "Standard Deviation",
+                    "10th Percentile",
+                    "25th Percentile",
+                    "70th Percentile",
+                    "90th Percentile"
+                ],
+                "Value": [
+                    mean_profit,
+                    std_profit,
+                    p10,
+                    p25,
+                    p70,
+                    p90
+                ]
             })
+
             st.dataframe(summary_df, use_container_width=True)
 
     except Exception as e:
