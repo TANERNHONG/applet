@@ -184,16 +184,16 @@ if uploaded_file is not None:
             sim_df = pd.DataFrame({"Total_Profit": simulations})
             mean_profit = sim_df["Total_Profit"].mean()
 
-            st.dataframe(sim_df)
+            # st.dataframe(sim_df)
 
             histogram = alt.Chart(sim_df).mark_bar().encode(
-                alt.X('pnl:Q',bin=alt.Bin(maxbins=50), title='PnL'),
+                alt.X('Total_Profit:Q',bin=alt.Bin(maxbins=50), title='PnL'),
                 alt.Y('count():Q',title='Frequency')
             ).properties(
                 title='Histogram of profits'
             )
 
-            st.altair_chart(histogram, use_container_width=True)
+            col4.altair_chart(histogram, use_container_width=True)
 
     except Exception as e:
         st.warning("The file uploaded is not readable. Try again.")
