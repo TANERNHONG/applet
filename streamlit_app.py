@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 from io import BytesIO
+import openpyxl
 
 st.set_page_config(
     page_title="Strategy analyser",
