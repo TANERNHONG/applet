@@ -10,7 +10,7 @@ st.set_page_config(
 
 file = st.file_uploader("Pick a file.")
 
-try:
+if file:
     df = pd.read_excel(file)
 
     @st.cache_data
@@ -31,5 +31,5 @@ try:
             icon=":material/download:",
         )
 
-except Exception:
+else:
     st.warning("The file uploaded is not readable. Try again.")
