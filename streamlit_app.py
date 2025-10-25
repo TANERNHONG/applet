@@ -27,7 +27,8 @@ class Trade:
 
 st.set_page_config(
     page_title="Strategy analyser",
-    page_icon=":chart_with_upwards_trend:"
+    page_icon=":chart_with_upwards_trend:",
+    layout='wide'
 )
 
 uploaded_file = st.file_uploader("Pick a file.")
@@ -40,8 +41,6 @@ if uploaded_file is not None:
         end = df.index[df['Time']=='Open Positions'].tolist()[0]
         df = pd.read_excel(uploaded_file, skiprows=start+8, nrows=end-start-3)
         df = df.dropna(subset=['Symbol'])
-
-        st.dataframe(df)
 
         list_of_trades = []
         for index, row in df.iterrows():
@@ -100,6 +99,7 @@ if uploaded_file is not None:
                         'volume': row['Volume'],
                         'pnl': pnl,
                         'strategy': extracted_text,
+                        'duration': time_elapsed,
                         'time_in': datetime_obj_in,
                         'time_out': datetime_obj_out,
                         'status': status
