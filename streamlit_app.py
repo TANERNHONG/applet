@@ -92,11 +92,13 @@ if uploaded_file is not None:
                     elif '[sl' in check_row['Comment']:
                         status = 'SL'
 
+                    pnl_1 = row['Commission'] + row['Fee'] + row['Swap'] + row['Profit']
+                    pnl_2 = check_row['Commission'] + check_row['Fee'] + check_row['Swap'] + check_row['Profit']
+                    pnl = pnl_1 + pnl_2
                     newrow = {
-                        'deal_in': row,
-                        'deal_out': check_row,
                         'symbol': row['Symbol'],
                         'volume': row['Volume'],
+                        'pnl': pnl,
                         'strategy': extracted_text,
                         'time_in': datetime_obj_in,
                         'time_out': datetime_obj_out,
