@@ -149,8 +149,11 @@ if uploaded_file is not None:
 
             col1.altair_chart(pie_chart, use_container_width=True)
 
+
             df_sorted = trades_df.sort_values("time_in").reset_index(drop=True)
             df_sorted["Cumulative"] = df_sorted["pnl"].cumsum()
+
+            st.dataframe(df_sorted)
 
             line_chart = alt.Chart(df_sorted).mark_line(point=True).encode(
                 x=alt.X("Start:T", title="Time"),
