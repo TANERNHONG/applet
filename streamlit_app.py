@@ -141,13 +141,17 @@ if uploaded_file is not None:
             win_lose_counts = trades_df["status"].value_counts().reset_index()
             win_lose_counts.columns = ["Status", "Count"]
 
-            pie_chart = alt.Chart(win_lose_counts).mark_arc().encode(
+            pie = alt.Chart(win_lose_counts).mark_arc().encode(
                 theta=alt.Theta(field="Count", type="quantitative"),
                 color=alt.Color(field="Status", type="nominal"),
                 tooltip=["Status", "Count"]
             ).properties(title="Win Rate")
 
-            col1.altair_chart(pie_chart, use_container_width=True)
+            text = pie.mark_text(radius=90, size=14).encode(
+                text=alt.Text("Percent:Q", format=".1f")
+            )
+
+            col1.altair_chart(pie + text, use_container_width=True)
 
 
             df_sorted = trades_df.sort_values("time_in").reset_index(drop=True)
@@ -178,7 +182,7 @@ if uploaded_file is not None:
             n_trades = len(trades_df)
 
             for _ in range(10000):
-                sampled = trades_df.sample(n=n_trades, replace=True)
+                sampled = trades_df.sample(n=n_trades, replace=False)
                 simulations.append(sampled["pnl"].sum())
 
             sim_df = pd.DataFrame({"Total_Profit": simulations})
@@ -193,7 +197,11 @@ if uploaded_file is not None:
                 title='Histogram of profits'
             )
 
-            col4.altair_chart(histogram, use_container_width=True)
+            mean_line = alt.Chart(pd.DataFrame({'mean_profit': [mean_profit]})).mark_rule(
+                color='red', strokeDash=[5, 5]
+            ).encode(x='mean_profit:Q')
+
+            col4.altair_chart(histogram + mean_line, use_container_width=True)
 
     except Exception as e:
         st.warning("The file uploaded is not readable. Try again.")
