@@ -182,9 +182,11 @@ if uploaded_file is not None:
             simulations = []
             n_trades = len(trades_df)
 
+            st.dataframe(trades_df)
+
             for _ in range(10000):
                 sampled = trades_df.sample(n=n_trades, replace=False)
-                simulations.append(sampled["pnl"].sum())
+                simulations.append(round(sampled["pnl"].sum()),2)
 
             sim_df = pd.DataFrame({"Total_Profit": simulations})
             mean_profit = sim_df["Total_Profit"].mean()
