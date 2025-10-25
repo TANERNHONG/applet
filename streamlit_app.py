@@ -2,9 +2,11 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from datetime import datetime
+import matplotlib.pyplot as plt
 from io import BytesIO
 import openpyxl
 import re
+import altair as alt
 
 class Trade:
     def __init__(self, symbol, deal_in, deal_out, volume, time_in, time_out, status, strategy):
@@ -130,5 +132,65 @@ if uploaded_file is not None:
                 mime='text/csv',
                 icon=":material/download:",
             )
+
+            st.title("Trade Performance Dashboard")
+
+            col1, col2 = st.columns(2)
+            col3, col4 = st.columns(2)
+
+            win_lose_counts = trades_df["status"].value_counts().reset_index()
+            win_lose_counts.columns = ["Status", "Count"]
+
+            pie_chart = alt.Chart(win_lose_counts).mark_arc().encode(
+                theta=alt.Theta(field="Count", type="quantitative"),
+                color=alt.Color(field="Status", type="nominal"),
+                tooltip=["Status", "Count"]
+            ).properties(title="Win Rate")
+
+            col1.altair_chart(pie_chart, use_container_width=True)
+
+            df_sorted = trades_df.sort_values("time_in").reset_index(drop=True)
+            df_sorted["Cumulative"] = df_sorted["pnl"].cumsum()
+
+            line_chart = alt.Chart(df_sorted).mark_line(point=True).encode(
+                x=alt.X("Start:T", title="Time"),
+                y=alt.Y("Cumulative:Q", title="Cumulative Profit"),
+                tooltip=["Start", "Cumulative"]
+            ).properties(title="Cumulative Profit Over Time")
+
+            col2.altair_chart(line_chart, use_container_width=True)
+
+            trades_df["duration_in_s"] = (trades_df["time_out"] - trades_df["time_out"]).dt.total_seconds() / 60  # in minutes
+
+            scatter_chart = alt.Chart(trades_df).mark_circle(size=60).encode(
+                x=alt.X("Amount:Q", title="Profit / Loss"),
+                y=alt.Y("Duration:Q", title="Trade Duration (min)"),
+                color=alt.Color("Result:N"),
+                tooltip=["Amount", "Duration", "Result"]
+            ).properties(title="Profit vs Trade Duration")
+
+            col3.altair_chart(scatter_chart, use_container_width=True)
+
+            simulations = []
+            n_trades = len(trades_df)
+
+            for _ in range(10000):
+                sampled = df.sample(n=n_trades, replace=True)
+                simulations.append(sampled["pnl"].sum())
+
+            sim_df = pd.DataFrame({"Total_Profit": simulations})
+            mean_profit = sim_df["Total_Profit"].mean()
+
+            # Histogram (matplotlib for better control of the red line)
+            fig, ax = plt.subplots()
+            ax.hist(sim_df["Total_Profit"], bins=50, color="skyblue", edgecolor="black")
+            ax.axvline(mean_profit, color="red", linestyle="--", linewidth=2, label=f"Mean: {mean_profit:.2f}")
+            ax.set_title("Monte Carlo Simulation of Total Profits")
+            ax.set_xlabel("Total Profit")
+            ax.set_ylabel("Frequency")
+            ax.legend()
+
+            col4.pyplot(fig)
+
     except Exception as e:
         st.warning("The file uploaded is not readable. Try again.")
