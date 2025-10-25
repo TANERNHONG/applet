@@ -35,13 +35,7 @@ uploaded_file = st.file_uploader("Pick a file.")
 if uploaded_file is not None:
 
     try:
-        with open(uploaded_file, 'rb') as f:
-            first_bytes = f.read(4)
-            if first_bytes==b'PK\x03\x04':
-                df = pd.read_excel(uploaded_file, skiprows=6)
-            else:
-                df = pd.read_csv(uploaded_file, skiprows=6)
-
+        df = pd.read_excel(uploaded_file, skiprows=6)
         start = df.index[df['Time']=='Deals'].tolist()[0]
         end = df.index[df['Time']=='Open Positions'].tolist()[0]
         df = pd.read_excel(uploaded_file, skiprows=start+8, nrows=end-start-3)
