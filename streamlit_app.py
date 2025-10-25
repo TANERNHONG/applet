@@ -188,10 +188,10 @@ if uploaded_file is not None:
             sim_df = pd.DataFrame({"Total_Profit": simulations})
             mean_profit = sim_df["Total_Profit"].mean()
 
-            # st.dataframe(sim_df)
+            st.dataframe(sim_df)
 
             histogram = alt.Chart(sim_df).mark_bar().encode(
-                alt.X('Total_Profit:Q',bin=alt.Bin(maxbins=20), title='PnL'),
+                alt.X('Total_Profit:Q',bin=alt.Bin(maxbins=100), title='PnL'),
                 alt.Y('count():Q',title='Frequency')
             ).properties(
                 title='Histogram of profits'
