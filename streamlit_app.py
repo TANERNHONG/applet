@@ -36,14 +36,14 @@ uploaded_file = st.file_uploader("Pick a file.")
 if uploaded_file is not None:
 
     try:
-        df=pd.read_excel(i, skiprows=6)
+        df=pd.read_excel(uploaded_file, skiprows=6)
         # display(df['Inputs:'])
         print(list(df['Inputs:']))
         start = df.index[df['Inputs:'] == 'Deals'].tolist()[0]
         end = len(df)+7
         df = pd.read_excel(df, skiprows=start+8, nrows=end-start-2)
 
-        st.dataframe(df)
+        # st.dataframe(df)
 
         list_of_trades = []
         for index, row in df.iterrows():
