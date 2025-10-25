@@ -8,22 +8,28 @@ st.set_page_config(
     page_icon=":chart_with_upwards_trend:"
 )
 
-df = st.file_uploader("Pick a file.")
+file = st.file_uploader("Pick a file.")
 
-@st.cache_data
-def convert_for_download(df):
-    return df.to_csv().encode("utf-8")
+try:
+    df = pd.read_excel(file)
 
-datetime_stamp = f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
+    @st.cache_data
+    def convert_for_download(df):
+        return df.to_csv().encode("utf-8")
 
-if st.button("Process files."):
-    csv = convert_for_download(df)
-    st.download_button(
-        label="Download output as CSV.",
-        data=csv,
-        file_name=f'processed_report_{datetime_stamp}.csv',
-        on_click="ignore",
-        type="primary",
-        mime='text/csv',
-        icon=":material/download:",
-    )
+    datetime_stamp = f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
+
+    if st.button("Process files."):
+        csv = convert_for_download(df)
+        st.download_button(
+            label="Download output as CSV.",
+            data=csv,
+            file_name=f'processed_report_{datetime_stamp}.csv',
+            on_click="ignore",
+            type="primary",
+            mime='text/csv',
+            icon=":material/download:",
+        )
+
+except Exception:
+    st.warning("The file uploaded is not readable. Try again.")
