@@ -180,11 +180,12 @@ if uploaded_file is not None:
             col3.altair_chart(scatter_chart, use_container_width=True)
 
             simulations = []
-            n_trades = len(trades_df)
-
+            total_trades = len(trades_df)
+        
             st.dataframe(trades_df)
 
             for _ in range(10000):
+                n_trades = np.random.randint(int(0.5 * total_trades), total_trades + 1)
                 sampled = trades_df.sample(n=n_trades, replace=False)
                 simulations.append(round(sampled["pnl"].sum()),2)
 
