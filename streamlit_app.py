@@ -180,6 +180,7 @@ if uploaded_file is not None:
             col3.altair_chart(scatter_chart, use_container_width=True)
 
             st.title("Performing simulations")
+            col5, col6 = st.columns(2)
             simulations = []
             total_trades = len(trades_df)
         
@@ -198,7 +199,7 @@ if uploaded_file is not None:
             mean_profit = sim_df["Total_Profit"].mean()
             std_profit = sim_df["Total_Profit"].std()
 
-            percentiles = np.percentile(sim_df["Total_Profit"], [10, 25, 70, 90])
+            percentiles = np.percentile(sim_df["Total_Profit"], [10, 25, 75, 90])
             p10, p25, p70, p90 = percentiles
 
             histogram = alt.Chart(sim_df).mark_bar().encode(
@@ -212,17 +213,16 @@ if uploaded_file is not None:
                 color='red', strokeDash=[5, 5]
             ).encode(x='mean_profit:Q')
 
-            st.altair_chart(histogram + mean_line, use_container_width=True)
+            col5.altair_chart(histogram + mean_line, use_container_width=True)
 
-            st.subheader("Simulation Summary Statistics")
             summary_df = pd.DataFrame({
                 "Statistic": [
-                    "Mean",
-                    "Standard Deviation",
-                    "10th Percentile",
-                    "25th Percentile",
-                    "70th Percentile",
-                    "90th Percentile"
+                    "mean",
+                    "standard_deviation",
+                    "10%",
+                    "25%",
+                    "75%",
+                    "90%"
                 ],
                 "Value": [
                     mean_profit,
@@ -234,7 +234,7 @@ if uploaded_file is not None:
                 ]
             })
 
-            st.dataframe(summary_df, use_container_width=True)
+            col6.dataframe(summary_df, use_container_width=True)
 
     except Exception as e:
         st.warning("The file uploaded is not readable. Try again.")
