@@ -166,8 +166,8 @@ if uploaded_file is not None:
             trades_df["duration_in_min"] = (trades_df["time_out"] - trades_df["time_in"]).dt.total_seconds() / 60  # in minutes
 
             scatter_chart = alt.Chart(trades_df).mark_circle(size=60).encode(
-                x=alt.X("pnl:Q", title="Profit / Loss"),
-                y=alt.Y("duration_in_min:Q", title="Trade Duration (min)"),
+                x=alt.X("duration_in_min:Q", title="Trade Duration (min)"),
+                y=alt.Y("pnl:Q", title="Profit / Loss"),
                 color=alt.Color("status:N"),
                 tooltip=["pnl", "duration_in_min", "status"]
             ).properties(title="Profit vs Trade Duration")
@@ -184,16 +184,16 @@ if uploaded_file is not None:
             sim_df = pd.DataFrame({"Total_Profit": simulations})
             mean_profit = sim_df["Total_Profit"].mean()
 
-            # Histogram (matplotlib for better control of the red line)
-            fig, ax = plt.subplots()
-            ax.hist(sim_df["Total_Profit"], bins=50, color="skyblue", edgecolor="black")
-            ax.axvline(mean_profit, color="red", linestyle="--", linewidth=2, label=f"Mean: {mean_profit:.2f}")
-            ax.set_title("Monte Carlo Simulation of Total Profits")
-            ax.set_xlabel("Total Profit")
-            ax.set_ylabel("Frequency")
-            ax.legend()
+            st.dataframe(sim_df)
 
-            col4.pyplot(fig)
+            histogram = alt.Chart(sim_df).mark_bar().encode(
+                alt.X('pnl:Q',bin=alt.Bin(maxbins=50), title='PnL'),
+                alt.Y('count():Q',title='Frequency')
+            ).properties(
+                title='Histogram of profits'
+            )
+
+            st.altair_chart(histogram, use_container_width=True)
 
     except Exception as e:
         st.warning("The file uploaded is not readable. Try again.")
