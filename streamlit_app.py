@@ -195,6 +195,7 @@ if uploaded_file is not None:
 
             sim_df = pd.DataFrame({"Total_Profit": simulations})
             mean_profit = sim_df["Total_Profit"].mean()
+            std_profit = sim_df["Total_Profit"].std()
 
             # st.dataframe(sim_df)
 
@@ -210,6 +211,14 @@ if uploaded_file is not None:
             ).encode(x='mean_profit:Q')
 
             col4.altair_chart(histogram + mean_line, use_container_width=True)
+
+            st.subheader("Simulation Summary Statistics")
+
+            summary_df = pd.DataFrame({
+                "Statistic": ["Mean", "Standard Deviation"],
+                "Value": [mean_profit, std_profit]
+            })
+            st.dataframe(summary_df, use_container_width=True)
 
     except Exception as e:
         st.warning("The file uploaded is not readable. Try again.")
