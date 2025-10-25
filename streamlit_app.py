@@ -18,10 +18,13 @@ csv = convert_for_download(df)
 
 datetime_stamp = f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
 
-st.download_button(
-    label="Download output as CSV.",
-    data=df,
-    file_name=f'processed_report_{datetime_stamp}.csv',
-    mime='text/csv',
-    icon=":material/download:",
-)
+if st.button("Process files."):
+    st.download_button(
+        label="Download output as CSV.",
+        data=df,
+        file_name=f'processed_report_{datetime_stamp}.csv',
+        on_click="ignore",
+        type="primary",
+        mime='text/csv',
+        icon=":material/download:",
+    )
