@@ -14,9 +14,8 @@ uploaded_file = st.file_uploader("Pick a file.")
 
 if uploaded_file is not None:
 
-    file_bytes = BytesIO(uploaded_file.read())
     try:
-        df = pd.read_excel(file_bytes)
+        df = pd.read_excel(uploaded_file)
 
         @st.cache_data
         def convert_for_download(df):
