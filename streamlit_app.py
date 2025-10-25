@@ -94,8 +94,8 @@ if uploaded_file is not None:
                     elif 'sl' in check_row['Comment']:
                         status = 'SL'
 
-                    pnl_1 = row['Commission'] + row['Fee'] + row['Swap'] + row['Profit']
-                    pnl_2 = check_row['Commission'] + check_row['Fee'] + check_row['Swap'] + check_row['Profit']
+                    pnl_1 = row['Commission'] + row['Swap'] + row['Profit']
+                    pnl_2 = check_row['Commission'] + check_row['Swap'] + check_row['Profit']
                     pnl = pnl_1 + pnl_2
                     newrow = {
                         'symbol': row['Symbol'],
