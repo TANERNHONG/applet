@@ -133,105 +133,111 @@ if uploaded_file is not None:
                 icon=":material/download:",
             )
 
-            st.title("Trade Performance Dashboard")
 
-            win_lose_counts = trades_df["status"].value_counts().reset_index()
-            win_lose_counts.columns = ["Status", "Count"]
-            win_lose_counts["Percent"] = win_lose_counts["Count"] / win_lose_counts["Count"].sum() * 100
+            with st.container():
+                st.title("Trade Performance Dashboard")
 
-            pie = alt.Chart(win_lose_counts).mark_arc().encode(
-                theta=alt.Theta(field="Count", type="quantitative"),
-                color=alt.Color(field="Status", type="nominal"),
-                tooltip=["Status", "Count"]
-            ).properties(title="Win Rate")
+                col1, col2 = st.columns(2)
+                col3, col4 = st.columns(2)
 
-            text = pie.mark_text(radius=90, size=14).encode(
-                text=alt.Text("Percent:Q", format=".1f")
-            )
+                win_lose_counts = trades_df["status"].value_counts().reset_index()
+                win_lose_counts.columns = ["Status", "Count"]
+                win_lose_counts["Percent"] = win_lose_counts["Count"] / win_lose_counts["Count"].sum() * 100
 
-            st.altair_chart(pie + text, use_container_width=True)
+                pie = alt.Chart(win_lose_counts).mark_arc().encode(
+                    theta=alt.Theta(field="Count", type="quantitative"),
+                    color=alt.Color(field="Status", type="nominal"),
+                    tooltip=["Status", "Count"]
+                ).properties(title="Win Rate")
 
-
-            df_sorted = trades_df.sort_values("time_in").reset_index(drop=True)
-            df_sorted["cumulative"] = df_sorted["pnl"].cumsum()
-
-            # st.dataframe(df_sorted)
-
-            line_chart = alt.Chart(df_sorted).mark_line(point=True).encode(
-                x=alt.X("time_in:T", title="Time"),
-                y=alt.Y("cumulative:Q", title="Cumulative Profit"),
-                tooltip=["time_in", "cumulative"]
-            ).properties(title="Cumulative Profit Over Time")
-
-            st.altair_chart(line_chart, use_container_width=True)
-
-            trades_df["duration_in_min"] = (trades_df["time_out"] - trades_df["time_in"]).dt.total_seconds() / 60  # in minutes
-
-            scatter_chart = alt.Chart(trades_df).mark_circle(size=60).encode(
-                x=alt.X("duration_in_min:Q", title="Trade Duration (min)"),
-                y=alt.Y("pnl:Q", title="Profit / Loss"),
-                color=alt.Color("status:N"),
-                tooltip=["pnl", "duration_in_min", "status"]
-            ).properties(title="Profit vs Trade Duration")
-
-            st.altair_chart(scatter_chart, use_container_width=True)
-
-            st.title("Performing simulations")
-            col5, col6 = st.columns(2)
-            simulations = []
-            total_trades = len(trades_df)
-        
-            # st.dataframe(trades_df)
-
-            for _ in range(10000):
-                n_trades = np.random.randint(int(0.5 * total_trades), total_trades + 1)
-                sampled = trades_df.sample(n=n_trades, replace=False)
-                simulations.append(
-                    round(
-                        sampled["pnl"].sum(), 2
-                    )
+                text = pie.mark_text(radius=90, size=14).encode(
+                    text=alt.Text("Percent:Q", format=".1f")
                 )
 
-            sim_df = pd.DataFrame({"Total_Profit": simulations})
-            mean_profit = sim_df["Total_Profit"].mean()
-            std_profit = sim_df["Total_Profit"].std()
+                col1.altair_chart(pie + text, use_container_width=True)
 
-            percentiles = np.percentile(sim_df["Total_Profit"], [10, 25, 75, 90])
-            p10, p25, p70, p90 = percentiles
 
-            histogram = alt.Chart(sim_df).mark_bar().encode(
-                alt.X('Total_Profit:Q',bin=alt.Bin(maxbins=50), title='PnL'),
-                alt.Y('count():Q',title='Frequency')
-            ).properties(
-                title='Histogram of profits'
-            )
+                df_sorted = trades_df.sort_values("time_in").reset_index(drop=True)
+                df_sorted["cumulative"] = df_sorted["pnl"].cumsum()
 
-            mean_line = alt.Chart(pd.DataFrame({'mean_profit': [mean_profit]})).mark_rule(
-                color='red', strokeDash=[5, 5]
-            ).encode(x='mean_profit:Q')
+                # st.dataframe(df_sorted)
 
-            col5.altair_chart(histogram + mean_line, use_container_width=True)
+                line_chart = alt.Chart(df_sorted).mark_line(point=True).encode(
+                    x=alt.X("time_in:T", title="Time"),
+                    y=alt.Y("cumulative:Q", title="Cumulative Profit"),
+                    tooltip=["time_in", "cumulative"]
+                ).properties(title="Cumulative Profit Over Time")
 
-            summary_df = pd.DataFrame({
-                "Statistic": [
-                    "mean",
-                    "standard_deviation",
-                    "10%",
-                    "25%",
-                    "75%",
-                    "90%"
-                ],
-                "Value": [
-                    mean_profit,
-                    std_profit,
-                    p10,
-                    p25,
-                    p70,
-                    p90
-                ]
-            })
+                col2.altair_chart(line_chart, use_container_width=True)
 
-            col6.dataframe(summary_df, use_container_width=True)
+                trades_df["duration_in_min"] = (trades_df["time_out"] - trades_df["time_in"]).dt.total_seconds() / 60  # in minutes
+
+                scatter_chart = alt.Chart(trades_df).mark_circle(size=60).encode(
+                    x=alt.X("duration_in_min:Q", title="Trade Duration (min)"),
+                    y=alt.Y("pnl:Q", title="Profit / Loss"),
+                    color=alt.Color("status:N"),
+                    tooltip=["pnl", "duration_in_min", "status"]
+                ).properties(title="Profit vs Trade Duration")
+
+                col3.altair_chart(scatter_chart, use_container_width=True)
+
+            with st.container():
+                st.title("Performing simulations")
+                col5, col6 = st.columns(2)
+                simulations = []
+                total_trades = len(trades_df)
+            
+                # st.dataframe(trades_df)
+
+                for _ in range(10000):
+                    n_trades = np.random.randint(int(0.5 * total_trades), total_trades + 1)
+                    sampled = trades_df.sample(n=n_trades, replace=False)
+                    simulations.append(
+                        round(
+                            sampled["pnl"].sum(), 2
+                        )
+                    )
+
+                sim_df = pd.DataFrame({"Total_Profit": simulations})
+                mean_profit = sim_df["Total_Profit"].mean()
+                std_profit = sim_df["Total_Profit"].std()
+
+                percentiles = np.percentile(sim_df["Total_Profit"], [10, 25, 75, 90])
+                p10, p25, p70, p90 = percentiles
+
+                histogram = alt.Chart(sim_df).mark_bar().encode(
+                    alt.X('Total_Profit:Q',bin=alt.Bin(maxbins=50), title='PnL'),
+                    alt.Y('count():Q',title='Frequency')
+                ).properties(
+                    title='Histogram of profits'
+                )
+
+                mean_line = alt.Chart(pd.DataFrame({'mean_profit': [mean_profit]})).mark_rule(
+                    color='red', strokeDash=[5, 5]
+                ).encode(x='mean_profit:Q')
+
+                col5.altair_chart(histogram + mean_line, use_container_width=True)
+
+                summary_df = pd.DataFrame({
+                    "Statistic": [
+                        "mean",
+                        "standard_deviation",
+                        "10%",
+                        "25%",
+                        "75%",
+                        "90%"
+                    ],
+                    "Value": [
+                        mean_profit,
+                        std_profit,
+                        p10,
+                        p25,
+                        p70,
+                        p90
+                    ]
+                })
+
+                col6.dataframe(summary_df, use_container_width=True)
 
     except Exception as e:
         st.warning("The file uploaded is not readable. Try again.")
